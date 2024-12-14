@@ -1,0 +1,22 @@
+{
+  "minimumLength": {
+    "optionscode": "numeric",
+    "value": 3
+  },
+  "maximumLength": {
+    "optionscode": "numeric",
+    "value": 30
+  },
+  "clearProfile": {
+    "optionscode": "yesno",
+    "value": 0
+  },
+  "regularExpressions": {
+    "optionscode": "textarea",
+    "value": "/\\p{C}+/u"
+  },
+  "pageAction": {
+    "optionscode": "text",
+    "value": "displayName"
+  }
+}
