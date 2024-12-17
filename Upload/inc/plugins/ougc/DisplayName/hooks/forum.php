@@ -299,6 +299,11 @@ function search_results_post09(): bool
     return true;
 }
 
+function index_start09(): bool
+{
+    return stats_start09();
+}
+
 function stats_start09(): bool
 {
     global $mybb;
