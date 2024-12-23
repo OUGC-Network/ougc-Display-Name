@@ -316,7 +316,7 @@ function loadPluginLibrary(): bool
 
     $fileExists = file_exists(PLUGINLIBRARY);
 
-    if ($fileExists && !($PL instanceof \PluginLibrary)) {
+    if ($fileExists && !($PL instanceof PluginLibrary)) {
         require_once PLUGINLIBRARY;
     }
 

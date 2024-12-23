@@ -32,7 +32,8 @@ namespace ougc\DisplayName\Hooks\Forum;
 
 use UserDataHandler;
 
-use function ougc\DisplayName\Core\fetchUserDisplayNAme;
+use function ougc\DisplayName\Core\control_db;
+use function ougc\DisplayName\Core\fetchUserDisplayName;
 use function ougc\DisplayName\Core\getSetting;
 use function ougc\DisplayName\Core\getTemplate;
 use function ougc\DisplayName\Core\loadLanguage;
@@ -72,6 +73,53 @@ function global_intermediate09(): bool
             build_profile_link(htmlspecialchars_uni($mybb->user['username']), $mybb->user['uid'])
         );
     }
+
+    control_db(
+        '
+    function query($string, $hide_errors = 0, $write_query = 0)
+    {
+        if (my_strpos($string, "fu.username AS fromusername") !== false) {
+            $string = str_replace("fu.username AS fromusername", "fu.ougcDisplayName AS fromusername", $string);
+        }
+        
+        if (my_strpos($string, "tu.username as tousername") !== false) {
+            $string = str_replace("tu.username as tousername", "tu.ougcDisplayName as tousername", $string);
+        }
+
+        if (my_strpos($string, "t.username AS threadusername") !== false) {
+            $string = str_replace(
+                ["t.username AS threadusername", "u.username,", "u.username AS username"],
+                ["u.ougcDisplayName AS threadusername", "u.ougcDisplayName as username,", "u.ougcDisplayName AS username"],
+            $string);
+
+            if (my_strpos($string, "ORDER BY t.sticky") !== false || my_strpos($string, "ORDER BY t.lastpost") !== false) {
+                $string = str_replace(
+                    [", u.username"],
+                    [", u.ougcDisplayName AS username"],
+                $string);
+            }
+        }
+
+        return parent::query($string, $hide_errors, $write_query);
+    }'
+    );
+
+    return true;
+}
+
+function private_read09(): bool
+{
+    control_db(
+        '
+    function simple_select($table, $fields="*", $conditions="", $options=array())
+    {
+        if ($table === "users" && my_strpos($fields, "uid, username") !== false && my_strpos($conditions, "uid IN (") !== false) {
+            $fields = "uid, ougcDisplayName AS username";
+        }
+
+        return parent::simple_select($table, $fields, $conditions, $options);
+    }'
+    );
 
     return true;
 }
@@ -171,11 +219,18 @@ function usercp_start(): bool
     return true;
 }
 
+function usercp_thread_subscriptions_thread09(): bool
+{
+    global $thread;
+
+    return true;
+}
+
 function forumdisplay_announcement09(): bool
 {
     global $announcement;
 
-    fetchUserDisplayNAme((int)$announcement['uid'], $announcement['username']);
+    fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
 
     if (!empty($announcement['username'])) {
         $announcement['username'] = htmlspecialchars_uni($announcement['username']);
@@ -190,9 +245,9 @@ function forumdisplay_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayNAme((int)$thread['uid'], $thread['username']);
+    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
 
-    fetchUserDisplayNAme((int)$thread['lastposteruid'], $thread['lastposter']);
+    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
 
     return true;
 }
@@ -201,7 +256,7 @@ function newreply_threadreview_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayNAme((int)$post['uid'], $post['username']);
+    fetchUserDisplayName((int)$post['uid'], $post['username']);
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -231,7 +286,7 @@ function portal_announcement09(): bool
 {
     global $announcement, $profilelink;
 
-    fetchUserDisplayNAme((int)$announcement['uid'], $announcement['username']);
+    fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
 
     if (!empty($announcement['username'])) {
         $announcement['username'] = htmlspecialchars_uni($announcement['username']);
@@ -252,9 +307,9 @@ function portal_discussion09(): bool
 {
     global $thread;
 
-    fetchUserDisplayNAme((int)$thread['uid'], $thread['username']);
+    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
 
-    fetchUserDisplayNAme((int)$thread['lastposteruid'], $thread['lastposter']);
+    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
 
     return true;
 }
@@ -263,7 +318,7 @@ function search_results_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayNAme((int)$thread['uid'], $thread['username']);
+    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
 
     if ($thread['username']) {
         $thread['username'] = htmlspecialchars_uni($thread['username']);
@@ -271,7 +326,7 @@ function search_results_thread09(): bool
         $thread['profilelink'] = build_profile_link($thread['username'], $thread['uid']);
     }
 
-    fetchUserDisplayNAme((int)$thread['lastposteruid'], $thread['lastposter']);
+    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
 
     if ($thread['lastposter']) {
         global $lastposter, $lastposterlink;
@@ -288,7 +343,7 @@ function search_results_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayNAme((int)$post['uid'], $post['username']);
+    fetchUserDisplayName((int)$post['uid'], $post['username']);
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -309,14 +364,14 @@ function stats_start09(): bool
     global $mybb;
 
     if (!empty($mybb->cache->cache['statistics']['top_poster'])) {
-        fetchUserDisplayNAme(
+        fetchUserDisplayName(
             (int)$mybb->cache->cache['statistics']['top_poster']['uid'],
             $mybb->cache->cache['statistics']['top_poster']['username']
         );
     }
 
     if (!empty($mybb->cache->cache['stats']['lastuid'])) {
-        fetchUserDisplayNAme(
+        fetchUserDisplayName(
             (int)$mybb->cache->cache['stats']['lastuid'],
             $mybb->cache->cache['stats']['lastusername']
         );
@@ -329,7 +384,7 @@ function usercp_latest_threads_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayNAme((int)$thread['uid'], $thread['username']);
+    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
 
     if ($thread['username']) {
         $thread['username'] = htmlspecialchars_uni($thread['username']);
@@ -337,7 +392,7 @@ function usercp_latest_threads_thread09(): bool
         $thread['profilelink'] = build_profile_link($thread['username'], $thread['uid']);
     }
 
-    fetchUserDisplayNAme((int)$thread['lastposteruid'], $thread['lastposter']);
+    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
 
     if ($thread['lastposter']) {
         global $lastposteruid, $lastposter, $lastposterlink;
@@ -359,7 +414,7 @@ function archive_start09(): bool
     global $announcement;
 
     if (!empty($announcement['username'])) {
-        fetchUserDisplayNAme((int)$announcement['uid'], $announcement['username']);
+        fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
     }
 
     return true;
@@ -369,7 +424,7 @@ function archive_thread_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayNAme((int)$post['uid'], $post['username']);
+    fetchUserDisplayName((int)$post['uid'], $post['username']);
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -386,7 +441,7 @@ function build_forumbits_forum09(array &$forum): array
         return $forum;
     }
 
-    fetchUserDisplayNAme((int)$forum['lastposteruid'], $forum['lastposter']);
+    fetchUserDisplayName((int)$forum['lastposteruid'], $forum['lastposter']);
 
     return $forum;
 }
@@ -397,10 +452,45 @@ function build_forumbits_forum_intermediate09(array &$hookArguments): array
         return $hookArguments;
     }
 
-    fetchUserDisplayNAme(
+    fetchUserDisplayName(
         (int)$hookArguments['lastpost_data']['lastposteruid'],
         $hookArguments['lastpost_data']['lastposter']
     );
 
     return $hookArguments;
+}
+
+function xmlhttp_edit_post_end09(): bool
+{
+    global $mybb, $templates;
+
+    $templates->cache['postbit_editedby'] = str_replace(
+        "{\$post['editedprofilelink']}",
+        build_profile_link($mybb->user['ougcDisplayName'], $mybb->user['uid']),
+        $templates->cache['postbit_editedby']
+    );
+
+    return true;
+}
+
+function showthread_start09(): bool
+{
+    control_db(
+        '
+    function query($string, $hide_errors = 0, $write_query = 0)
+    {
+        if (my_strpos($string, "eu.username AS editusername") !== false) {
+            $string = str_replace("eu.username AS editusername", "eu.ougcDisplayName AS editusername", $string);
+        }
+
+        return parent::query($string, $hide_errors, $write_query);
+    }'
+    );
+
+    return true;
+}
+
+function newreply_do_newreply_end09(): bool
+{
+    return showthread_start09();
 }

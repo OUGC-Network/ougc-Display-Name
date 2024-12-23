@@ -285,7 +285,7 @@ function getUserByDisplayName(string $displayName, array $queryOptions = [])
     return (array)$db->fetch_array($query);
 }
 
-function fetchUserDisplayNAme(int $userID, string &$userName): string
+function fetchUserDisplayName(int $userID, string &$userName): string
 {
     static $usersCache = [];
 
