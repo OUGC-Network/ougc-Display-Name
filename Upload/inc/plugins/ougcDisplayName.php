@@ -144,19 +144,3 @@ function ougcDisplayNameGetByUsername(
 ): string {
     return ougcDisplayNameGet(0, $formatName, $profileLink, true, $userName);
 }
-
-function _dump()
-{
-    global $mybb;
-
-    if (!((int)$mybb->user['uid'] === 1)) {
-        return false;
-    }
-
-    $args = func_get_args();
-
-    echo '<pre>';
-    var_dump($args);
-    echo '</pre>';
-    exit;
-}
