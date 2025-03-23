@@ -158,6 +158,8 @@ function pluginActivate(): bool
 
     /*~*~* RUN UPDATES END *~*~*/
 
+    $cache->update_usergroups();
+
     $plugins['DisplayName'] = $pluginInfo['versioncode'];
 
     $cache->update('ougc_plugins', $plugins);
@@ -229,6 +231,8 @@ function pluginUninstall(): bool
     $PL->templates_delete('ougcDisplayName');
 
     change_admin_permission('config', 'ougc_display_name', -1);
+
+    $cache->update_usergroups();
 
     $plugins = (array)$cache->read('ougc_plugins');
 
