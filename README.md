@@ -11,7 +11,7 @@
 
 ---
 
-<p align="center"> Integrates a shop system with NewPoints.
+<p align="center"> Allow users to use a display name to visually replace their unique username.
     <br> 
 </p>
 
@@ -33,7 +33,7 @@
 
 ## 🚀 About <a name = "about"></a>
 
-Integrates a shop system with NewPoints.
+Allow users to use a display name to visually replace their unique username.
 
 [Go up to Table of Contents](#table_of_contents)
 
@@ -85,7 +85,7 @@ Follow the next steps in order to install a copy of this plugin on your forum.
    from the [repository releases](https://github.com/OUGC-Network/ougc-Display-Name/releases/latest).
 2. Upload the contents of the _Upload_ folder to your MyBB root directory.
 3. Browse to _Configuration » Plugins_ and install this plugin by clicking _Install & Activate_.
-4. Browse to _NewPoints_ to manage NewPoints modules.
+4. Browse to _Settings_ to manage the plugin settings.
 
 ### Updating <a name = "update"></a>
 
@@ -94,11 +94,11 @@ Follow the next steps in order to update your copy of this plugin.
 1. Browse to _Configuration » Plugins_ and deactivate this plugin by clicking _Deactivate_.
 2. Follow step 1 and 2 from the [Install](#install) section.
 3. Browse to _Configuration » Plugins_ and activate this plugin by clicking _Activate_.
-4. Browse to _NewPoints_ to manage NewPoints modules.
+4. Browse to _Settings_ to manage the plugin settings.
 
 ### Template Modifications <a name = "template_modifications"></a>
 
-To display NewPoints data it is required that you edit the following template for each of your themes.
+To display the User Control Panel it is required that you edit the following template for each of your themes.
 
 1. Place `<!--OUGC_DISPLAY_NAME-->` after `{$changenameop}` in the `usercp_nav_profile` template to display the user
    control panel navigation link.
