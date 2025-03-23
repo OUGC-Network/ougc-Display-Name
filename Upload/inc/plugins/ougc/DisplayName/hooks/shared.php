@@ -45,12 +45,18 @@ use const ougc\DisplayName\Core\VALIDATION_RESULT_SUCCESS;
 
 function format_name90(array &$hookArguments): array
 {
+    global $ougcDisplayNameSkip;
+
+    if (!empty($ougcDisplayNameSkip)) {
+        return $hookArguments;
+    }
+
     $userData = get_user_by_username($hookArguments['username'], ['fields' => 'ougcDisplayName']);
 
-    if (!empty($userData['ougcDisplayName'])) {
+    if (!empty($userData['ougcDisplayName']) && $hookArguments['username'] !== $userData['ougcDisplayName']) {
         $hookArguments['format'] = str_replace(
             '{username}',
-            htmlspecialchars_uni($userData['ougcDisplayName']),
+            htmlspecialchars_uni($userData['ougcDisplayName']) . '<!--{username}-->',
             $hookArguments['format']
         );
     }

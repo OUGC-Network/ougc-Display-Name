@@ -97,3 +97,66 @@ function ougcDisplayName_uninstall(): bool
 {
     return pluginUninstall();
 }
+
+function ougcDisplayNameGet(
+    int $userID = 0,
+    bool $formatName = true,
+    bool $profileLink = true,
+    bool $getByUsername = false,
+    string $userName = ''
+): string {
+    if ($getByUsername) {
+        $userData = get_user_by_username(
+            $userName,
+            ['fields' => 'username', 'ougcDisplayName', 'usergroup', 'displaygroup']
+        );
+    } else {
+        $userData = get_user($userID);
+    }
+
+    if (empty($userData['uid'])) {
+        return (string)$userName;
+    }
+
+    $displayName = htmlspecialchars_uni($userData['ougcDisplayName']);
+
+    if ($profileLink) {
+        $displayName = build_profile_link($displayName, $userData['uid']);
+    }
+
+    if ($formatName) {
+        global $ougcDisplayNameSkip;
+
+        $ougcDisplayNameSkip = true;
+
+        $displayName = format_name($displayName, $userData['usergroup'], $userData['displaygroup']);
+
+        $ougcDisplayNameSkip = false;
+    }
+
+    return $displayName;
+}
+
+function ougcDisplayNameGetByUsername(
+    string $userName,
+    bool $formatName = true,
+    bool $profileLink = true
+): string {
+    return ougcDisplayNameGet(0, $formatName, $profileLink, true, $userName);
+}
+
+function _dump()
+{
+    global $mybb;
+
+    if (!((int)$mybb->user['uid'] === 1)) {
+        return false;
+    }
+
+    $args = func_get_args();
+
+    echo '<pre>';
+    var_dump($args);
+    echo '</pre>';
+    exit;
+}
