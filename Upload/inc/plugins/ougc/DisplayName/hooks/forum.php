@@ -230,7 +230,9 @@ function forumdisplay_announcement09(): bool
 {
     global $announcement;
 
-    fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
+    if (!empty($announcement['username'])) {
+        fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
+    }
 
     if (!empty($announcement['username'])) {
         $announcement['username'] = htmlspecialchars_uni($announcement['username']);
@@ -245,9 +247,14 @@ function forumdisplay_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    if (!empty($thread['username'])) {
+        fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    }
 
-    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+
+    if (!empty($thread['lastposter'])) {
+        fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    }
 
     return true;
 }
@@ -256,7 +263,9 @@ function newreply_threadreview_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayName((int)$post['uid'], $post['username']);
+    if (!empty($post['username'])) {
+        fetchUserDisplayName((int)$post['uid'], $post['username']);
+    }
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -286,7 +295,9 @@ function portal_announcement09(): bool
 {
     global $announcement, $profilelink;
 
-    fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
+    if (!empty($announcement['username'])) {
+        fetchUserDisplayName((int)$announcement['uid'], $announcement['username']);
+    }
 
     if (!empty($announcement['username'])) {
         $announcement['username'] = htmlspecialchars_uni($announcement['username']);
@@ -307,9 +318,13 @@ function portal_discussion09(): bool
 {
     global $thread;
 
-    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    if (!empty($thread['username'])) {
+        fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    }
 
-    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    if (!empty($thread['lastposter'])) {
+        fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    }
 
     return true;
 }
@@ -318,7 +333,9 @@ function search_results_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    if (!empty($thread['username'])) {
+        fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    }
 
     if ($thread['username']) {
         $thread['username'] = htmlspecialchars_uni($thread['username']);
@@ -326,7 +343,9 @@ function search_results_thread09(): bool
         $thread['profilelink'] = build_profile_link($thread['username'], $thread['uid']);
     }
 
-    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    if (!empty($thread['lastposter'])) {
+        fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    }
 
     if ($thread['lastposter']) {
         global $lastposter, $lastposterlink;
@@ -343,7 +362,9 @@ function search_results_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayName((int)$post['uid'], $post['username']);
+    if (!empty($post['username'])) {
+        fetchUserDisplayName((int)$post['uid'], $post['username']);
+    }
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -363,14 +384,14 @@ function stats_start09(): bool
 {
     global $mybb;
 
-    if (!empty($mybb->cache->cache['statistics']['top_poster'])) {
+    if (!empty($mybb->cache->cache['statistics']['top_poster']) && !empty($mybb->cache->cache['statistics']['top_poster']['username'])) {
         fetchUserDisplayName(
             (int)$mybb->cache->cache['statistics']['top_poster']['uid'],
             $mybb->cache->cache['statistics']['top_poster']['username']
         );
     }
 
-    if (!empty($mybb->cache->cache['stats']['lastuid'])) {
+    if (!empty($mybb->cache->cache['stats']['lastuid']) && !empty($mybb->cache->cache['stats']['lastusername'])) {
         fetchUserDisplayName(
             (int)$mybb->cache->cache['stats']['lastuid'],
             $mybb->cache->cache['stats']['lastusername']
@@ -384,7 +405,9 @@ function usercp_latest_threads_thread09(): bool
 {
     global $thread;
 
-    fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    if (!empty($thread['username'])) {
+        fetchUserDisplayName((int)$thread['uid'], $thread['username']);
+    }
 
     if ($thread['username']) {
         $thread['username'] = htmlspecialchars_uni($thread['username']);
@@ -392,7 +415,9 @@ function usercp_latest_threads_thread09(): bool
         $thread['profilelink'] = build_profile_link($thread['username'], $thread['uid']);
     }
 
-    fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    if (!empty($thread['lastposter'])) {
+        fetchUserDisplayName((int)$thread['lastposteruid'], $thread['lastposter']);
+    }
 
     if ($thread['lastposter']) {
         global $lastposteruid, $lastposter, $lastposterlink;
@@ -424,7 +449,9 @@ function archive_thread_post09(): bool
 {
     global $post;
 
-    fetchUserDisplayName((int)$post['uid'], $post['username']);
+    if (!empty($post['username'])) {
+        fetchUserDisplayName((int)$post['uid'], $post['username']);
+    }
 
     if ($post['username']) {
         $post['username'] = htmlspecialchars_uni($post['username']);
@@ -441,7 +468,9 @@ function build_forumbits_forum09(array &$forum): array
         return $forum;
     }
 
-    fetchUserDisplayName((int)$forum['lastposteruid'], $forum['lastposter']);
+    if (!empty($forum['lastposter'])) {
+        fetchUserDisplayName((int)$forum['lastposteruid'], $forum['lastposter']);
+    }
 
     return $forum;
 }
@@ -452,10 +481,12 @@ function build_forumbits_forum_intermediate09(array &$hookArguments): array
         return $hookArguments;
     }
 
-    fetchUserDisplayName(
-        (int)$hookArguments['lastpost_data']['lastposteruid'],
-        $hookArguments['lastpost_data']['lastposter']
-    );
+    if (!empty($hookArguments['lastpost_data']['lastposter'])) {
+        fetchUserDisplayName(
+            (int)$hookArguments['lastpost_data']['lastposteruid'],
+            $hookArguments['lastpost_data']['lastposter']
+        );
+    }
 
     return $hookArguments;
 }
