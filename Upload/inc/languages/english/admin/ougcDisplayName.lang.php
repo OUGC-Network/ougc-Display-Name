@@ -61,7 +61,7 @@ $l = [
     'ougcDisplayNamePageSuccessApply' => 'The selected file edit was applied successfully.',
     'ougcDisplayNamePageSuccessRevert' => 'The selected file edit was reverted successfully.',
 
-    'ougcDisplayNamePageErrorApply' => 'There was an error applying the selected file edits.',
+    'ougcDisplayNamePageErrorApply' => 'There was an error applying the selected file edits. Make sure all the files are writable (CMOD to <code>777</code>).',
     'ougcDisplayNamePageErrorRevert' => 'There was an error reverting the selected file edits.',
 
     'ougcDisplayNamePluginLibrary' => 'This plugin requires <a href="{1}">PluginLibrary</a> version {2} or later to be uploaded to your forum.',

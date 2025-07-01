@@ -249,7 +249,7 @@ function clearProfile(): bool
     return (bool)getSetting('clearProfile');
 }
 
-function getUserByDisplayName(string $displayName, array $queryOptions = [])
+function getUserByDisplayName(string $displayName, array $queryOptions = []): array
 {
     global $db;
 

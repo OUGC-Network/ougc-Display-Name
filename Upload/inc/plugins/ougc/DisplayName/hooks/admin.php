@@ -140,16 +140,6 @@ function admin_user_users_begin(): bool
     return true;
 }
 
-function admin_user_users_search_commit(): bool
-{
-    global $mybb;
-    global $admin_view;
-
-    _dump($admin_view, $mybb->input);
-
-    return true;
-}
-
 function admin_config_action_handler(array &$actions): array
 {
     global $lang;
